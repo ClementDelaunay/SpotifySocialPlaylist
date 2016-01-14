@@ -1,0 +1,6 @@
+{
+  "name": "Social Playlist",
+  "dependencies": {
+    "angular": "1.4.0"
+  }
+}

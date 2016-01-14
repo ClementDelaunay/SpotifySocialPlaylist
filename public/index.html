@@ -1,0 +1,209 @@
+<!-- index.html -->
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="SocialPlaylist">
+<head>
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Social Playlist</title>
+
+    <!-- SCROLLS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <style>
+        body { padding-top: 70px; }
+        .fade-effect.long{
+            -webkit-transition: all 1s;
+            -moz-transition: all 1s;
+            transition: all 1s;
+        }
+        .search-clear {
+            right: 12px;
+            float: right;
+            top: -13px;
+            height: 14px;
+            font-size: 15px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .progress-playing{
+            height: 5px;
+        }
+        .search-bar{
+            margin-bottom: 0;
+            margin-top: 8px;
+        }
+        .jumbotron{
+            font-size: 12px;
+        }
+        .like-dislike.active{
+            color: #fff;
+            background: #9C9C9C;
+        }
+        .table-tracks tr:active td{
+            background: #BDBDBD !important;
+        }
+        .autocomplete-input{
+            margin-bottom: -10px;
+        }
+        .ui-autocomplete {
+            height: 0;
+            width: 100%;
+            overflow: scroll;
+            z-index: 1000;
+            cursor: default;
+            padding: 0;
+            margin-top: 5px;
+            list-style: none;
+            background-color: #ffffff;
+            border: 1px solid #ccc
+            -webkit-border-radius: 5px;
+               -moz-border-radius: 5px;
+                    border-radius: 5px;
+            -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+               -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        .ui-autocomplete.active{
+            height: 280px;
+        }
+        .ui-menu-item:hover, .ui-menu-item:active{
+            background: #e7e7e7;
+        }
+        .ui-autocomplete > li {
+          padding: 3px 20px;
+        }
+        .ui-autocomplete > li.ui-state-focus {
+          background-color: #DDD;
+        }
+        .ui-helper-hidden-accessible {
+          display: none;
+        }
+    </style>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.1.0.js"></script>
+    <script src="app.js"></script>
+
+</head>
+
+<body ng-controller="AppController as app">
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Social Playlist</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Modal -->
+        <div id="infoTrack" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{app.interface.modal.display.title}}</h4>
+              </div>
+              <div class="modal-body">
+                <p>{{app.interface.modal.display.text}}</p>
+              </div>
+              <div class="modal-footer">
+                <button ng-if="!app.interface.modal.confirm" type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
+                <button ng-if="app.interface.modal.confirm" type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button ng-if="app.interface.modal.confirm" type="button" class="btn btn-success" ng-click="app.remove()">Yes</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      <div ng-if="!app.data.auth" class="jumbotron">
+      <div class="text-center">
+        <h2 ng-if="app.data.forbiddenAuth">You're already logged</h2>
+        <h2 ng-if="!app.data.forbiddenAuth">Please connect with Facebook</h2>
+        <br/>
+        <div ng-if="!app.data.forbiddenAuth" class="text-center fb-login-button" data-size="large" data-show-faces="false" data-auto-logout-link="false"></div>
+        <br/>
+        <br/>
+        <div>
+          <a href="/" ng-if="!app.data.forbiddenAuth"><em>Click for refresh if it does not appear</em></a>
+        </div>
+      </div>
+        
+      </div>
+
+      <div ng-if="app.data.auth" class="jumbotron">
+        <div class="panel panel-default" ng-if="app.interface.playing.playing">
+          <div class="panel-heading">
+            <h3 class="panel-title">Now playing</h3>
+          </div>
+          <div class="panel-body">
+            {{app.interface.playing.track}} - {{app.interface.playing.artist}}
+            <div class="progress progress-playing">
+              <div class="progress-bar" role="progressbar" aria-valuenow="{{(app.interface.playing.duration.current*100)/app.interface.playing.duration.total}}" aria-valuemin="0" aria-valuemax="100" style="width: {{(app.interface.playing.duration.current*100)/app.interface.playing.duration.total}}%;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <h2>Hello {{app.data.name}}, find a track</h2>
+        <h5>Click it to add</h5>
+        <div class="search-bar form-group ui-widget">
+            <input type="text" ng-model="app.data.search" ng-focus="app.interface.focusSearch = true" ng-blur="app.interface.focusSearch = false" ng-model-options="{ debounce: { default: 500} }" ng-change="app.search()" class="form-control autocomplete-input" placeholder="Songs, Artists..."  />
+            <span ng-click="app.clearSearch()" class="glyphicon glyphicon-remove-circle search-clear" ng-if="app.data.tracks.length > 0"></span>
+            <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" ng-class="{active: app.data.tracks.length > 0 && app.interface.focusSearch}">
+                <li class="ui-menu-item" ng-repeat="track in app.data.tracks track by track.link" ng-mousedown="app.add(track)"> {{track.name}} - {{track.artists[0].name}}</li>
+            </ul>
+        </div>
+        <table class="table table-striped table-tracks" ng-if="app.data.playlist.length != 0">
+          <thead>
+            <tr>
+              <th>Song</th>
+              <th>Artist</th>
+              <th class="text-center"><span class="glyphicon glyphicon-thumbs-up"></span></th>
+              <th class="text-center"><span class="glyphicon glyphicon-thumbs-down"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="(key, track) in app.data.playlist |  orderBy:'-score'" on-long-press="app.showRemove(track)">
+                <td class="fade-effect long">{{track.track.name}}</td>
+                <td class="fade-effect long">{{track.track.artists[0].name}}</td>
+                <td class="fade-effect long text-center">
+                    <button type="button" class="btn btn-default like-dislike" ng-class="{'active' : track.likes.indexOf(app.data.uid) > -1}" ng-click="app.likeDislike(track, key, 1)">
+                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                    </button>
+                    <div class="text-center">+ {{track.likes.length}}</div>
+                </td>
+                <td class="fade-effect long text-center">
+                    <button type="button" class="btn btn-default like-dislike" ng-class="{'active' : track.dislikes.indexOf(app.data.uid) > -1}" ng-click="app.likeDislike(track, key, 0)">
+                        <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
+                    </button>
+                    <div class="text-center">- {{track.dislikes.length}}</div>
+                </td>
+            </tr>
+          </tbody>
+          <em ng-if="app.data.playlist.length != 0">Long press on a track to remove it</em>
+        </table>
+        <p ng-if="app.data.playlist.length == 0">{{app.interface.loading.display}}</p>
+        <div class="text-center">
+          <button type="button" class="btn btn-default navbar-btn" ng-if="app.data.auth" ng-click="app.logout()">Logout</button>
+        </div>
+        
+      </div>
+
+    </div> 
+
+</head>
+
+
+</body>
+</html>
