@@ -29,25 +29,25 @@ To Do
 
 **You need a Spotify Premium account and a Facebook App for use it.**
 
-##### Generate Application Key ####
+1. Generate Application Key
 
 First of all, please generate a application key on the spotify developper platform.
 https://devaccount.spotify.com/my-account/keys/
 
-##### Paste Application Key ####
+2. Paste Application Key
 
 Then, paste the binary key at the project's root and name it :
 
     spotify_appkey.key
 
 
-##### Install Backend Dependencies ####
+3. Install Backend Dependencies
 
 ```sh
 npm install
 ```
 
-##### Install Frontend Dependencies ####
+4. Install Frontend Dependencies
 
 ```sh
 cd public
@@ -57,11 +57,11 @@ bower install
 ## Configure ##
 
 
-##### In /app.js ####
+1. In /app.js
 
 Replace *YOUR_SPOTIFY_LOGIN* and *YOUR_SPOTIFY_PASSWORD* by your Spotify credentials.
 
-##### In public/app.js ####
+2. In public/app.js
 
 Replace *YOUR_FB_APP_ID* by your facebook application ID.
 
