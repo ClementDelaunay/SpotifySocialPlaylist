@@ -21,7 +21,6 @@ Features
 To Do
 -------
 
- - Fix facebook disconnect issue
  - Add Windows audio support
 
 
@@ -41,36 +40,34 @@ Then, paste the binary key at the project's root and name it :
     spotify_appkey.key
 
 
-3) Install Backend Dependencies
+3) Install Dependencies
 
 ```sh
-npm install
-```
-
-4) Install Frontend Dependencies
-
-```sh
-cd public
-bower install
+gulp install
 ```
 
 ## Configure ##
 
 
-1) In /app.js
+1) In **/config/development.json**
 
-Replace *YOUR_SPOTIFY_LOGIN* and *YOUR_SPOTIFY_PASSWORD* by your Spotify credentials.
+Replace **YOUR_SPOTIFY_LOGIN** and **YOUR_SPOTIFY_PASSWORD** by your Spotify credentials.
 
-2) In public/app.js
+2) In **/front/src/js/app.js**
 
-Replace *YOUR_FB_APP_ID* by your facebook application ID.
+Replace **YOUR_FB_APP_ID** by your facebook application ID.
+
+3) Custom config
+
+You can edit the server URL in **/front/src/js/environments/current.js**
+You can also edit the autodestroy options and the server parameters in **/config/development.json**
 
 
 ## Launch ##
 
-At the project's root :
+Compile assets and launch project :
 ```sh
-node app.js
+gulp
 ```
 
-Access to http://localhost:8080 and enjoy !
+Access to http://127.0.0.1:8000 and enjoy !

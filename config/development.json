@@ -1,0 +1,31 @@
+{
+  "spotify": {
+    "credentials": {
+		  "login": "YOUR_SPOTIFY_LOGIN",
+		  "password": "YOUR_SPOTIFY_PASSWORD"
+		},
+    "config":{
+      "autodestroy":{
+        "activated": true,
+        "maxClients": 6,
+        "maxPercentage": 75
+      }
+    }
+  },
+  "server": {
+      "debug": false,
+  		"auth":{
+			"secretKey": "H8CCfzKC4pnQV5CQ3LcLEtNY",
+			"saltFactor": 10
+  		},
+
+  		"api":{
+  			"prefix":"/api"
+  		},
+
+		"connection": {
+		  "host": "127.0.0.1",
+		  "port": 8000
+		}
+	}
+}
